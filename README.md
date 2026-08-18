@@ -37,6 +37,8 @@ TaskManager is a SwiftUI todo-style iOS app focused on clean architecture, good 
 - When a task has a due date/time, a local notification is scheduled.
 - Completed tasks do not trigger reminders.
 
+Detailed implementation notes, diagrams, and manual code blocks are in [docs/notifications-and-flow.md](docs/notifications-and-flow.md).
+
 ## Persistence Strategy
 
 This project currently uses a lightweight persistence layer:

@@ -9,6 +9,8 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject private var viewModel = TaskListViewModel()
+    @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.openURL) private var openURL
 
     var body: some View {
         NavigationStack {
@@ -74,13 +76,24 @@ struct ContentView: View {
             .navigationTitle("Task Manager")
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button {
-                        viewModel.requestNotificationPermission()
-                    } label: {
-                        Label(
-                            viewModel.notificationsEnabled ? "Reminders On" : "Enable Reminders",
-                            systemImage: viewModel.notificationsEnabled ? "bell.fill" : "bell.badge"
-                        )
+                    if viewModel.notificationsDenied {
+                        Button {
+                            guard let settingsURL = URL(string: UIApplication.openSettingsURLString) else {
+                                return
+                            }
+                            openURL(settingsURL)
+                        } label: {
+                            Label("Open Settings", systemImage: "bell.slash")
+                        }
+                    } else {
+                        Button {
+                            viewModel.requestNotificationPermission()
+                        } label: {
+                            Label(
+                                viewModel.notificationsEnabled ? "Reminders On" : "Enable Reminders",
+                                systemImage: viewModel.notificationsEnabled ? "bell.fill" : "bell.badge"
+                            )
+                        }
                     }
                 }
 
@@ -99,6 +112,15 @@ struct ContentView: View {
             }
             .task {
                 await viewModel.refreshNotificationStatus()
+            }
+            .onChange(of: scenePhase) { _, newValue in
+                guard newValue == .active else {
+                    return
+                }
+
+                Task {
+                    await viewModel.refreshNotificationStatus()
+                }
             }
         }
     }
@@ -154,6 +176,11 @@ struct ContentView: View {
             .buttonStyle(.borderedProminent)
             .frame(maxWidth: .infinity)
             .disabled(!viewModel.canAddTask)
+
+            Text(viewModel.notificationStatusText)
+                .font(.caption)
+                .foregroundStyle(viewModel.notificationsDenied ? .red : .secondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
         }
         .padding(.horizontal)
         .padding(.vertical, 10)
