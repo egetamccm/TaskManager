@@ -103,6 +103,27 @@ final class TaskListViewModel: ObservableObject {
         notificationStatus == .authorized || notificationStatus == .provisional
     }
 
+    var notificationsDenied: Bool {
+        notificationStatus == .denied
+    }
+
+    var notificationStatusText: String {
+        switch notificationStatus {
+        case .authorized:
+            return "Reminders are enabled"
+        case .provisional:
+            return "Reminders are provisionally enabled"
+        case .denied:
+            return "Reminders are blocked in system settings"
+        case .notDetermined:
+            return "Reminder permission not requested yet"
+        case .ephemeral:
+            return "Reminders are temporarily enabled"
+        @unknown default:
+            return "Reminder status unknown"
+        }
+    }
+
     func addTask() {
         let trimmedTitle = newTaskTitle.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedTitle.isEmpty else {
@@ -119,6 +140,10 @@ final class TaskListViewModel: ObservableObject {
             ),
             at: 0
         )
+
+        if normalizedDueDate != nil && notificationStatus == .notDetermined {
+            requestNotificationPermission()
+        }
 
         newTaskTitle = ""
         newTaskPriority = .medium
