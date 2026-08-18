@@ -4,7 +4,7 @@ TaskManager is a SwiftUI todo-style iOS app focused on clean architecture, good 
 
 ## App Screenshot
 
-![TaskManager app screenshot](TaskManagerTests/docs/images/app-screenshot.png)
+<img src="TaskManagerTests/docs/images/app-screenshot.png" alt="TaskManager app screenshot" width="360" />
 
 ## Features
 
@@ -16,17 +16,6 @@ TaskManager is a SwiftUI todo-style iOS app focused on clean architecture, good 
 - Clear all completed tasks
 - Local persistence using JSON + UserDefaults
 
-## Project Structure
-
-```
-TaskManager/
-	Models/
-	Services/
-	ViewModels/
-	Views/
-		Components/
-TaskManagerTests/
-```
 
 ## Tech Stack
 
